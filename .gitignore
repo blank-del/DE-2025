@@ -1,1 +1,21 @@
-.env
+# OS and editor-specific
+.DS_Store
+Thumbs.db
+
+# Terraform hidden directory (cache and provider plugins)
+.terraform/
+.terraform.lock.hcl
+
+# Variables
+*.tfvars
+*.env
+*.json
+
+# tf plan
+*.tfplan
+
+crash.log
+
+# tf backup
+*.tfstate
+*.tfstate.backup
