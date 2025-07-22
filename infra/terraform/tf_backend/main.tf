@@ -13,6 +13,6 @@ resource "azurerm_storage_account" "tf_st" {
 
 resource "azurerm_storage_container" "tf_state" {
   name                  = var.tf_container_name
-  storage_account_name = azurerm_storage_account.tf_st.name
+  storage_account_name  = azurerm_storage_account.tf_st.name
   container_access_type = "private"
 }
