@@ -17,3 +17,7 @@ resource "azurerm_storage_container" "raw" {
   storage_account_name = azurerm_storage_account.dota.name
   container_access_type = "private"
 }
+
+terraform {
+  backend "azurerm" {}
+}
