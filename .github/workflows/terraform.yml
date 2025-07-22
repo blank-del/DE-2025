@@ -12,11 +12,19 @@ jobs:
     name: Terraform Plan and Apply
     runs-on: ubuntu-latest
     env:
+    #Terraform secrets
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION: ${{ secrets.ARM_SUBSCRIPTION }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+    #TF vars
+      TF_VAR_main_resource_group_name: ${{ secrets.MAIN_RESOURCE_GROUP_NAME }}
+      TF_VAR_dota_storage_account_name: ${{ secrets.DOTA_STORAGE_ACCOUNT_NAME }}
+      TF_VAR_raw_container_name: ${{ secrets.RAW_CONTAINER_NAME }}
 
+      TF_VAR_tf_resource_group_name: ${{ secrets.TF_RESOURCE_GROUP_NAME }}
+      TF_VAR_tf_storage_account_name: ${{ secrets.TF_STORAGE_ACCOUNT_NAME }}
+      TF_VAR_tf_container_name: ${{ secrets.TF_CONTAINER_NAME }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -26,12 +34,30 @@ jobs:
         with:
           terraform_version: 1.7.5
 
-      - name: Terraform Init
-        run: terraform -chdir=infra/terraform init
+      - name: Terraform Init Bootstrap
+        run: terraform -chdir=infra/terraform/tf_backend init
 
-      - name: Terraform Plan
-        run: terraform -chdir=infra/terraform plan
+      - name: Terraform Plan Bootstrap
+        run: terraform -chdir=infra/terraform/tf_backend plan
 
-      - name: Terraform Apply
+      - name: Terraform Apply Bootstrap
+        run: terraform -chdir=infra/terraform/tf_backend apply -auto-approve
+
+      - name: Generate backend config
+        run: |
+          cat > infra/terraform/dota2/backend.config <<EOF
+          resource_group_name  = "${{ env.TF_VAR_tf_resource_group_name }}"
+          storage_account_name = "${{ env.TF_VAR_tf_storage_account_name }}"
+          container_name       = "${{ env.TF_VAR_tf_container_name }}"
+          key                  = "terraform.tfstate"
+          EOF
+
+      - name: Terraform Init Main
+        run: terraform -chdir=infra/terraform/dota2 init -backend-config=backend.config
+
+      - name: Terraform Plan Main
+        run: terraform -chdir=infra/terraform/dota2 plan
+
+      - name: Terraform Apply Main
         if: github.ref == 'refs/heads/main'
-        run: terraform -chdir=infra/terraform apply -auto-approve
+        run: terraform -chdir=infra/terraform/dota2 apply -auto-approve
