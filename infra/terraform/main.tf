@@ -9,9 +9,11 @@ resource "azurerm_storage_account" "dota" {
   location                 = azurerm_resource_group.main_rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  is_hns_enabled = true
 }
 
 resource "azurerm_storage_container" "raw" {
   name                  = var.raw_container_name
+  storage_account_name = azurerm_storage_account.dota.name
   container_access_type = "private"
 }

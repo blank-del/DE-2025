@@ -9,6 +9,18 @@ We will be using terraform (IaC) to set up the infrastructure and to version con
 -- variables.tf
 ```
 
+Before running the `main.tf` set a service principal for your account so that terraform can make changes on your behalf
+```bash
+az ad sp create-for-rbac \
+--name <SP_name> \
+--role="Contributor" \
+--scopes="/subscriptions/<subscription_id>"
+```
+Once you have the `appid`, `password` set the environment variables so that terraform can authenticate using the credentials, if you have stored them in `.env` file then run the following command:
+```bash
+export $(cat .env | xargs)
+```
+
 ## File Structure
 Terraform does not care about having different file as long as its `.tf` and in the same folder. Seperating the logic makes the code more readable, easier to maintain, and modular.
 
