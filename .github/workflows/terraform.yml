@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'infra/terraform/**'
-
+  workflow_dispatch:
 jobs:
   terraform:
     name: Terraform Plan and Apply
