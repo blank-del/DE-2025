@@ -14,7 +14,7 @@ variable "tf_storage_account_name" {
     description = "Name of the Storage Account for Terraform"
 }
 
-variable "tf_conatiner_name" {
+variable "tf_container_name" {
     type = string
     description = "Name of the containter for Terraform"
 }
