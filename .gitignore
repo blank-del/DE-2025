@@ -25,3 +25,6 @@ __blobstorage__
 __queuestorage__
 __tablestorage__
 *.azurite
+
+__pycache__/
+*.pyc
