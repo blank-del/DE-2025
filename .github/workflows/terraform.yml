@@ -17,11 +17,21 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-    #TF vars
+      #TF vars
+      #Dota resources
       TF_VAR_main_resource_group_name: ${{ secrets.MAIN_RESOURCE_GROUP_NAME }}
       TF_VAR_dota_storage_account_name: ${{ secrets.DOTA_STORAGE_ACCOUNT_NAME }}
       TF_VAR_raw_container_name: ${{ secrets.RAW_CONTAINER_NAME }}
 
+      #Function App
+      TF_VAR_function_app_storage_account_name: ${{ secrets.FUNCTION_APP_STORAGE_ACCOUNT_NAME }}
+      TF_VAR_function_app_container_name: ${{ secrets.FUNCTION_APP_CONTAINER_NAME }}
+      TF_VAR_function_app_workspace_name: ${{ secrets.FUNCTION_APP_WORKSPACE_NAME }}
+      TF_VAR_function_app_insights_name: ${{ secrets.FUNCTION_APP_INSIGHTS_NAME }}
+      TF_VAR_function_service_plan_name: ${{ secrets.FUNCTION_SERVICE_PLAN_NAME }}
+      TF_VAR_function_app_function_name: ${{ secrets.FUNCTION_APP_FUNCTION_NAME }}
+      
+      #Tf backend
       TF_VAR_tf_resource_group_name: ${{ secrets.TF_RESOURCE_GROUP_NAME }}
       TF_VAR_tf_storage_account_name: ${{ secrets.TF_STORAGE_ACCOUNT_NAME }}
       TF_VAR_tf_container_name: ${{ secrets.TF_CONTAINER_NAME }}
@@ -34,13 +44,28 @@ jobs:
         with:
           terraform_version: 1.7.5
 
-      - name: Terraform Init Bootstrap
-        run: terraform -chdir=infra/terraform/tf_backend init
+      # Check if the backend already exists
+      - name: Backend Exist Check
+        run: |
+          if az storage container exists \
+            --name ${{ env.TF_VAR_tf_container_name }} \
+            --account-name ${{ env.TF_VAR_tf_storage_account_name }} \
+            --auth-mode login \
+            --subscription ${{ env.ARM_SUBSCRIPTION_ID }} | grep '"exists": true'; then echo "backend_exist=true" >> $GITHUB_ENV
+          else
+            echo "backend_exists=false" >> $GITHUB_ENV
+          fi
 
+      - name: Terraform Init Bootstrap
+        if: env.backend_exists == 'false'
+        run: terraform -chdir=infra/terraform/tf_backend init
+        
       - name: Terraform Plan Bootstrap
+        if: env.backend_exists == 'false'
         run: terraform -chdir=infra/terraform/tf_backend plan
 
       - name: Terraform Apply Bootstrap
+        if: env.backend_exists == 'false'
         run: terraform -chdir=infra/terraform/tf_backend apply -auto-approve
 
       - name: Generate backend config
