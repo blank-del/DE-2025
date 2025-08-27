@@ -29,7 +29,7 @@ resource "azurerm_storage_account" "functionappst" {
 
 resource "azurerm_storage_container" "functionappcontainer" {
   name                  = var.function_app_container_name
-  storage_account_name  = azurerm_storage_account.dota.name
+  storage_account_name  = azurerm_storage_account.functionappst.name
   container_access_type = "private"
 }
 

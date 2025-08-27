@@ -48,7 +48,6 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          enable-AzPSSession: true
 
       # Check if the backend already exists
       - name: Backend Exist Check
