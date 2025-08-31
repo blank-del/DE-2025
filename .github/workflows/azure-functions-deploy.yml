@@ -39,5 +39,7 @@ jobs:
         uses: azure/functions-action@v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: './azure-functions' # path to your function app code
+          package: './azure-functions' # path to function app code
+          sku: 'flexconsumption' # plan sku
+          remote-build: true  # enable remote build
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }} # publish profile secret
