@@ -2,10 +2,10 @@ name: Terraform Deployment to Azure
 
 on:
   push:
-    branches:
-      - main
     paths:
       - 'infra/terraform/**'
+    branches:
+      - main
   workflow_dispatch:
 jobs:
   terraform:

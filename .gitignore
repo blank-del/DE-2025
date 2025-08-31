@@ -1,6 +1,7 @@
 # OS and editor-specific
 .DS_Store
 Thumbs.db
+.vscode/
 
 # Terraform hidden directory (cache and provider plugins)
 .terraform/
@@ -9,7 +10,7 @@ Thumbs.db
 # Variables
 *.tfvars
 *.env
-*.json
+local.settings.json
 
 # tf plan
 *.tfplan
@@ -24,7 +25,9 @@ crash.log
 __blobstorage__
 __queuestorage__
 __tablestorage__
+__azurite_*
 *.azurite
 
 __pycache__/
 *.pyc
+.venv/
